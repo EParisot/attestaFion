@@ -28,7 +28,7 @@ Démarrez le serveur:
 ```
 python attestaFion.py
 ```
-(si gunicorn est installé : ```gunicorn attestaFion:app``` )
+(ou bien, si gunicorn est installé : ```gunicorn attestaFion:app``` )
 
 Naviguez vers localhost:8080 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur).
 
