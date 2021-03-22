@@ -18,6 +18,12 @@ Voici donc un serveur qui utilise la meme addresse que ci dessus mais qui va "co
 (à héberger vous-memes localement, à vous d'utiliser Gunicorn, WSGI, etc selon vos besoins !)
 
 # instructions
+Installer les dépendances:
+```
+pip install -r requirements.txt
+```
+(Ce programme utilise chromedriver en mode headless)
+
 Démarrez le serveur:
 ```
 python attestaFion.py
