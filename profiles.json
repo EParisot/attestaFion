@@ -2,7 +2,8 @@
 	"infos": {
 		"reasons_values": ["travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"],
 		"reasons_infos": "No accents !! , those values are present in both curfew and quarantine",
-		"delay": "in minutes, represents the elapsed time between the time you made the attestation ;) and now"
+		"delay": "in minutes, represents the elapsed time between the time you made the attestation ;) and now",
+		"todo": "You must replace every CAPITAL word by your informations"
 	},
 	"FISRTNAME": {
 		"firstname": "FISRTNAME",
