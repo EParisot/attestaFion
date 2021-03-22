@@ -153,7 +153,6 @@ def get_pdf():
 
 		# get page	
 		driver.get("https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/")
-
 		html = driver.page_source
 		soup = BeautifulSoup(html, features="lxml")
 
