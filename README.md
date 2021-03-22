@@ -22,4 +22,6 @@ Démarrez le serveur:
 python attestaFion.py
 ```
 
-Naviguez vers localhost:8080 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur), profitez de la liberté !
+Naviguez vers localhost:8080 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur).
+Renseignez vos données ainsi qu'une durée de délai (par exemple il est 16h, si vous renseignez un délai de 42 minutes, l'attestation générée préesentera une heure de 15h18).
+Profitez de la liberté !
