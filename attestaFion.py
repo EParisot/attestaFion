@@ -142,7 +142,10 @@ def get_pdf():
 		driver = webdriver.Chrome(executable_path=webdriver_path, options=options)
 
 		# get page
-		driver.get("https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/")
+		try:
+			driver.get("https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/")
+		except:
+			print("Error, Chrome89 not found on system, please install Chrome")
 		html = driver.page_source
 		soup = BeautifulSoup(html, features="lxml")
 
