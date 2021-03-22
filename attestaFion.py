@@ -138,6 +138,7 @@ def get_pdf():
 		else:
 			flash("Woopsy, server's system not identified...")
 			return redirect("/")
+		webdriver_path = os.path.join(Path(__file__).parent.absolute(), webdriver_path)
 		driver = webdriver.Chrome(executable_path=webdriver_path, options=options)
 
 		# get page
@@ -185,15 +186,15 @@ def get_pdf():
 
 reasons = ["achats", "travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"]
 class UserForm(FlaskForm):
-	firstname = StringField('Prénom', validators=[DataRequired()])
-	lastname = StringField('Nom', validators=[DataRequired()])
-	birthday = StringField('Date de naissance (XX/XX/XXXX)', validators=[DataRequired()])
-	placeofbirth = StringField('Lieu de naissance', validators=[DataRequired()])
-	address = StringField('Adresse', validators=[DataRequired()])
-	city = StringField('Ville', validators=[DataRequired()])
-	zipcode = StringField('Code postal', validators=[DataRequired()])
-	reason = SelectField('Motif', choices=reasons)
-	delay = IntegerField('Délai')
+	firstname = StringField('Prénom:', validators=[DataRequired()])
+	lastname = StringField('Nom:', validators=[DataRequired()])
+	birthday = StringField('Date de naissance (XX/XX/XXXX):', validators=[DataRequired()])
+	placeofbirth = StringField('Lieu de naissance:', validators=[DataRequired()])
+	address = StringField('Adresse:', validators=[DataRequired()])
+	city = StringField('Ville:', validators=[DataRequired()])
+	zipcode = StringField('Code postal:', validators=[DataRequired()])
+	reason = SelectField('Motif:', choices=reasons)
+	delay = IntegerField('Délai (minutes):')
 	submit = SubmitField('Générer')
 
 @app.route('/')

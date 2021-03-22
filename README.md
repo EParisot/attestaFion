@@ -22,12 +22,13 @@ Installer les dépendances:
 ```
 pip install -r requirements.txt
 ```
-(Ce programme utilise chromedriver en mode headless)
+### !!! Ce programme à besoin que Chrome 89 soit installé !!!
 
 Démarrez le serveur:
 ```
 python attestaFion.py
 ```
+(si gunicorn est installé : ```gunicorn attestaFion:app``` )
 
 Naviguez vers localhost:8080 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur).
 
