@@ -139,13 +139,15 @@ def get_pdf():
 			flash("Woopsy, server's system not identified...")
 			return redirect("/")
 		webdriver_path = os.path.join(Path(__file__).parent.absolute(), webdriver_path)
-		driver = webdriver.Chrome(executable_path=webdriver_path, options=options)
-
-		# get page
 		try:
-			driver.get("https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/")
+			driver = webdriver.Chrome(executable_path=webdriver_path, options=options)
 		except:
-			print("Error, Chrome89 not found on system, please install Chrome")
+			flash("Error, Chrome not found on system, please install Chrome 89 on server...")
+			return redirect("/")
+
+		# get page	
+		driver.get("https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/")
+
 		html = driver.page_source
 		soup = BeautifulSoup(html, features="lxml")
 
