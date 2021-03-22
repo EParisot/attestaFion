@@ -27,11 +27,17 @@ import zlib
 
 from PIL import Image
 
+import string
+import random
+
 DELAY = 3
 ATTEST_PATH = "C:/Users/Rock_/Desktop/attestaFion/attestations"
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '%M/Z.QKLJGDFsdfghjchfxdP8ZNRCQSDrez432AZQdhtfyRSDTFGH(AZEq'
+
+letters = string.ascii_lowercase
+app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
+
 
 def get_date(user_delay):
 	now = datetime.now()
