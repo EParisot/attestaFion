@@ -1,0 +1,18 @@
+{
+	"infos": {
+		"reasons_values": ["travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"],
+		"reasons_infos": "No accents !! , those values are present in both curfew and quarantine",
+		"delay": "in minutes, represents the elapsed time between the time you made the attestation ;) and now"
+	},
+	"eric": {
+		"firstname": "",
+		"lastname": "",
+		"birthday": "",
+		"placeofbirth": "",
+		"address": "",
+		"city": "",
+		"zipcode": "",
+		"reasons": [],
+		"delay": 30
+	}
+}
