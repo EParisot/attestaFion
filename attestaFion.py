@@ -14,7 +14,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-from flask import Flask, send_file, request
+from flask import Flask, send_file, request, render_template, flash, redirect
+from flask_wtf import FlaskForm
+from wtforms import StringField, SelectField, IntegerField, SubmitField
+from wtforms.validators import DataRequired
 
 import qrcode
 from io import BytesIO
@@ -28,6 +31,7 @@ DELAY = 3
 ATTEST_PATH = "C:/Users/Rock_/Desktop/attestaFion/attestations"
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = '%M/Z.QKLJGDFsdfghjchfxdP8ZNRCQSDrez432AZQdhtfyRSDTFGH(AZEq'
 
 def get_date(user_delay):
 	now = datetime.now()
@@ -37,19 +41,19 @@ def get_date(user_delay):
 	hour = now.strftime("%Hh%M")
 	return now, date, hour
 
-def make_qr_code(user, date, hour):
-	first_name = user["firstname"]
-	last_name = user["lastname"]
-	birth_date = user["birthday"]
-	birth_city = user["placeofbirth"]
-	address = user["address"] + user["zipcode"] + user["city"]
-	reasons = ", ".join(user["reasons"])
+def make_qr_code(profile, now, date, hour):
+	first_name = profile["firstname"]
+	last_name = profile["lastname"]
+	birth_date = profile["birthday"]
+	birth_city = profile["placeofbirth"]
+	address = profile["address"] + profile["zipcode"] + profile["city"]
+	reason = profile["reason"]
 	data = "Cree le: %s a %s;\
 		\nNom: %s;\nPrenom: %s;\
 		\nNaissance: %s a %s;\
 		\nAdresse: %s;\
 		\nSortie: %s a %s;\
-		\nMotifs: %s;\n" % (date, hour, first_name, last_name, birth_date, birth_city, address, date, hour, reasons)
+		\nMotifs: %s;\n" % (date, hour, first_name, last_name, birth_date, birth_city, address, date, hour, reason)
 	qr = qrcode.QRCode(
 		version=1,
 		error_correction=qrcode.constants.ERROR_CORRECT_M,
@@ -66,35 +70,15 @@ def serve_pil_image(pil_img):
 	img_io.seek(0)
 	return send_file(img_io, mimetype='image/jpeg')
 
-@app.route('/qr')
-def get_qr_code():
-	user = request.args.get('username', None)
-	if user:
-		# get profiles data
-		with open("profiles.json") as f:
-			profiles = json.load(f)
-		# build data
-		if user in profiles.keys():
-			now, date, hour = get_date(profiles[user]["delay"])
-			img = make_qr_code(profiles[user], date, hour)
-			return serve_pil_image(img)
-		else:
-			return "User not found"
-	else:
-		return "No user specifyed"
-
-def fill_form(driver, user, now, date, hour):
-	# get profile
-	with open("profiles.json") as f:
-		profiles = json.load(f)
+def fill_form(driver, profile, now, date, hour):
 	# fill profile
-	firstname_input = driver.find_element_by_id("field-firstname").send_keys(profiles[user]["firstname"])
-	lastname_input = driver.find_element_by_id("field-lastname").send_keys(profiles[user]["lastname"])
-	birthday_input = driver.find_element_by_id("field-birthday").send_keys(profiles[user]["birthday"])
-	placeofbirth_input = driver.find_element_by_id("field-placeofbirth").send_keys(profiles[user]["placeofbirth"])
-	address_input = driver.find_element_by_id("field-address").send_keys(profiles[user]["address"])
-	citye_input = driver.find_element_by_id("field-city").send_keys(profiles[user]["city"])
-	zipcode_input = driver.find_element_by_id("field-zipcode").send_keys(profiles[user]["zipcode"])
+	firstname_input = driver.find_element_by_id("field-firstname").send_keys(profile["firstname"])
+	lastname_input = driver.find_element_by_id("field-lastname").send_keys(profile["lastname"])
+	birthday_input = driver.find_element_by_id("field-birthday").send_keys(profile["birthday"])
+	placeofbirth_input = driver.find_element_by_id("field-placeofbirth").send_keys(profile["placeofbirth"])
+	address_input = driver.find_element_by_id("field-address").send_keys(profile["address"])
+	citye_input = driver.find_element_by_id("field-city").send_keys(profile["city"])
+	zipcode_input = driver.find_element_by_id("field-zipcode").send_keys(profile["zipcode"])
 	# set hour
 	datesortie_input = driver.find_element_by_id("field-datesortie").send_keys(date)
 	heuresortie_input = driver.find_element_by_id("field-heuresortie").send_keys(hour)
@@ -106,76 +90,107 @@ def fill_form(driver, user, now, date, hour):
 	checkboxes = driver.find_elements_by_xpath("//input[@name='field-reason']")
 	for checkbox in checkboxes:
 		try:
-			if checkbox.get_attribute('value') in profiles[user]["reasons"]:
+			if checkbox.get_attribute('value') == profile["reason"]:
 				checkbox.click()
 		except:
 			pass
 	# submit
 	submit_button = driver.find_element_by_id("generate-btn").click()
 
-@app.route('/attestation')
+@app.route('/attestation', methods=['GET', 'POST'])
 def get_pdf():
-	user = request.args.get('username', None).lower()
-	if user:
-		# get profiles data
-		with open("profiles.json") as f:
-			profiles = json.load(f)
+	form = UserForm()
+	if form.validate_on_submit():
 
-		if user in profiles.keys():
-			# set driver options
-			options = webdriver.ChromeOptions()
-			options.headless = True
-			# download pdf location
-			options.add_experimental_option('prefs', {
-				"download.default_directory": str(PureWindowsPath(ATTEST_PATH)) if platform.system() == "Windows" else ATTEST_PATH, #Change default directory for downloads
-				"download.prompt_for_download": False, #To auto download the file
-				"download.directory_upgrade": True,
-				"plugins.always_open_pdf_externally": True #It will not show PDF directly in chrome
-			})
-			driver = webdriver.Chrome(options=options)
+		profile = {}
+		profile["firstname"] = form.firstname.data
+		profile["lastname"] = form.lastname.data
+		profile["birthday"] = form.birthday.data
+		profile["placeofbirth"] = form.placeofbirth.data
+		profile["address"] = form.address.data
+		profile["city"] = form.city.data
+		profile["zipcode"] = form.zipcode.data
+		profile["reason"] = form.reason.data
+		profile["delay"] = form.delay.data
 
-			# get page
-			driver.get("https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/")
-			html = driver.page_source
-			soup = BeautifulSoup(html, features="lxml")
+		now, date, hour = get_date(profile["delay"])
 
-			# pass the update button
-			wait = WebDriverWait(driver, DELAY)
+		if profile["reason"] == "achats" and (19 <= now.hour or now.hour < 6):
+			flash("Des achats pendant le couvre-feu ? T'es magique toi !")
+			return redirect("/")
+		
+		# set driver options
+		options = webdriver.ChromeOptions()
+		options.headless = True
+		# download pdf location
+		options.add_experimental_option('prefs', {
+			"download.default_directory": str(PureWindowsPath(ATTEST_PATH)) if platform.system() == "Windows" else ATTEST_PATH, #Change default directory for downloads
+			"download.prompt_for_download": False, #To auto download the file
+			"download.directory_upgrade": True,
+			"plugins.always_open_pdf_externally": True #It will not show PDF directly in chrome
+		})
+		driver = webdriver.Chrome(options=options)
+
+		# get page
+		driver.get("https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/")
+		html = driver.page_source
+		soup = BeautifulSoup(html, features="lxml")
+
+		# pass the update button
+		wait = WebDriverWait(driver, DELAY)
+		try:
 			update_button = wait.until(EC.element_to_be_clickable((By.ID, 'reload-btn')))
-			try:
-				update_button = driver.find_element_by_id("reload-btn").click()
-			except:
-				pass
+			update_button = driver.find_element_by_id("reload-btn").click()
+		except:
+			pass
 
-			# fill form
-			now, date, hour = get_date(profiles[user]["delay"])
-			fill_form(driver, user, now, date, hour)
+		# fill form
+		fill_form(driver, profile, now, date, hour)
 
-			# wait file to get there
-			time.sleep(DELAY)
+		# wait file to get there
+		time.sleep(DELAY)
 
-			# rename file to avoid duplicates between users
+		# rename file to avoid duplicates between users
+		try:
 			filename = max([os.path.join(ATTEST_PATH, f) for f in os.listdir(ATTEST_PATH)], key=os.path.getctime)
-			new_filename = os.path.join(ATTEST_PATH, user + "_" + os.path.basename(filename))
+			new_filename = os.path.join(ATTEST_PATH, profile["firstname"] + "_" + os.path.basename(filename))
 			shutil.move(filename, new_filename)
+		except:
+			flash("Woopsy, une erreur s'est produite...")
+			return redirect("/")
 
-			# make QRcode and edit PDF
-			img = make_qr_code(profiles[user], date, hour).convert('RGB').resize((590, 590))
-			pdf_file = Pdf.open(new_filename, allow_overwriting_input=True)
-			page = pdf_file.pages[0]
-			page_image = list(page.images.keys())
-			rawimage = page.images[page_image[0]]
-			rawimage.write(zlib.compress(img.tobytes()), filter=Name("/FlateDecode"))
-			rawimage.Width, rawimage.Height = 590, 590
-			page.Resources.XObject[page_image[0]] = rawimage
-			pdf_file.save(new_filename)
+		# make QRcode and edit PDF
+		img = make_qr_code(profile, now, date, hour).convert('RGB').resize((590, 590))
+		pdf_file = Pdf.open(new_filename, allow_overwriting_input=True)
+		page = pdf_file.pages[1]
+		page_image = list(page.images.keys())
+		rawimage = page.images[page_image[0]]
+		rawimage.write(zlib.compress(img.tobytes()), filter=Name("/FlateDecode"))
+		rawimage.Width, rawimage.Height = 590, 590
+		page.Resources.XObject[page_image[0]] = rawimage
+		pdf_file.save(new_filename)
 
-			# send file to user
-			return send_file(new_filename, mimetype="application/pdf")
-		else:
-			return "User not found"
-	else:
-		return "No user specifyed"
+		# send file to user
+		return send_file(new_filename, mimetype="application/pdf")
+	return redirect("/")
+
+reasons = ["achats", "travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"]
+class UserForm(FlaskForm):
+	firstname = StringField('Prénom', validators=[DataRequired()])
+	lastname = StringField('Nom', validators=[DataRequired()])
+	birthday = StringField('Date de naissance (XX/XX/XXXX)', validators=[DataRequired()])
+	placeofbirth = StringField('Lieu de naissance', validators=[DataRequired()])
+	address = StringField('Adresse', validators=[DataRequired()])
+	city = StringField('Ville', validators=[DataRequired()])
+	zipcode = StringField('Code postal', validators=[DataRequired()])
+	reason = SelectField('Motif', choices=reasons)
+	delay = IntegerField('Délai')
+	submit = SubmitField('Générer')
+
+@app.route('/')
+def main():
+	form = UserForm()
+	return render_template('template.html', title='AttestaFion', form=form)
 
 if __name__ == "__main__":
 	app.run(host="0.0.0.0", port=8080)
