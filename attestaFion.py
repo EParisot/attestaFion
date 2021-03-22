@@ -129,7 +129,16 @@ def get_pdf():
 			"download.directory_upgrade": True,
 			"plugins.always_open_pdf_externally": True #It will not show PDF directly in chrome
 		})
-		driver = webdriver.Chrome(options=options)
+		if platform.system() == "Windows":
+			webdriver_path = "webdrivers/chromedriver_win.exe"
+		elif platform.system() == "Linux":
+			webdriver_path = "webdrivers/chromedriver_linux"
+		elif platform.system() == "Darwin":
+			webdriver_path = "webdrivers/chromedriver_mac"
+		else:
+			flash("Woopsy, server's system not identified...")
+			return redirect("/")
+		driver = webdriver.Chrome(executable_path=webdriver_path, options=options)
 
 		# get page
 		driver.get("https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/")

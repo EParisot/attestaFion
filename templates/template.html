@@ -3,66 +3,87 @@
         <title>AttestaFion</title>
     </head>
     <body>
-		<h1>AttestaFion, le générateur d'attestations COVID (pas comme les autres)</h1>
-		<form action="/attestation" method="post" novalidate>
-			{{ form.hidden_tag() }}
+		<style>
+			form {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
 
-			{% with messages = get_flashed_messages() %}
-			{% if messages %}
-			<ul>
-				{% for message in messages %}
-				<li>{{ message }}</li>
-				{% endfor %}
-			</ul>
-			{% endif %}
-			{% endwith %}
-			
-			<p>
-				{{ form.firstname.label }}<br>
-				{{ form.firstname(size=64) }}
-			</p>
+			input {
+				width: 250px;
+			}
 
-			<p>
-				{{ form.lastname.label }}<br>
-				{{ form.lastname(size=64) }}
-			</p>
+			#main {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+			}
+		</style>
+		<div id="main">
+			<h1>AttestaFion</h1>
+			<h2>Le générateur d'attestations COVID</h2>
+			<h3>(pas comme les autres)</h3>
+			<form action="/attestation" method="post" novalidate>
+				{{ form.hidden_tag() }}
 
-			<p>
-				{{ form.birthday.label }}<br>
-				{{ form.birthday(size=64) }}
-			</p>
+				{% with messages = get_flashed_messages() %}
+				{% if messages %}
+				<ul>
+					{% for message in messages %}
+					<span style="color: red;">{{ message }}</span>
+					{% endfor %}
+				</ul>
+				{% endif %}
+				{% endwith %}
+				
+				<p>
+					{{ form.firstname.label }}<br>
+					{{ form.firstname(size=64) }}
+				</p>
 
-			<p>
-				{{ form.placeofbirth.label }}<br>
-				{{ form.placeofbirth(size=64) }}
-			</p>
+				<p>
+					{{ form.lastname.label }}<br>
+					{{ form.lastname(size=64) }}
+				</p>
 
-			<p>
-				{{ form.address.label }}<br>
-				{{ form.address(size=64) }}
-			</p>
+				<p>
+					{{ form.birthday.label }}<br>
+					{{ form.birthday(size=64) }}
+				</p>
 
-			<p>
-				{{ form.city.label }}<br>
-				{{ form.city(size=64) }}
-			</p>
+				<p>
+					{{ form.placeofbirth.label }}<br>
+					{{ form.placeofbirth(size=64) }}
+				</p>
 
-			<p>
-				{{ form.zipcode.label }}<br>
-				{{ form.zipcode(size=5) }}
-			</p>
+				<p>
+					{{ form.address.label }}<br>
+					{{ form.address(size=64) }}
+				</p>
 
-			<p>
-				{{ form.reason.label }}<br>
-				{{ form.reason() }}
-			</p>
+				<p>
+					{{ form.city.label }}<br>
+					{{ form.city(size=64) }}
+				</p>
 
-			<p>
-				{{ form.delay.label }}<br>
-				{{ form.delay(size=5) }}
-			</p>
+				<p>
+					{{ form.zipcode.label }}<br>
+					{{ form.zipcode(size=5) }}
+				</p>
 
-			<p>{{ form.submit() }}</p>
-		</form>
+				<p>
+					{{ form.reason.label }}<br>
+					{{ form.reason() }}
+				</p>
+
+				<p>
+					{{ form.delay.label }}<br>
+					{{ form.delay(size=5) }}
+				</p>
+
+				<p>{{ form.submit() }}</p>
+			</form>
+		</div>
     </body>
 </html>
