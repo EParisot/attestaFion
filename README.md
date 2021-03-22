@@ -1,7 +1,7 @@
 # attestaFion
 AttestaFion, le générateur d'attestations COVID (pas comme les autres)
 
-Avertissement: Cet outil n'a pas pour vocation à vous dispenser des restrictions COVID.
+**Avertissement: Cet outil n'a pas pour vocation à vous dispenser des restrictions COVID.**
 Cela dit il pourrait vous éviter de payer le prix fort une petite étourderie.
 
 Toutefois, le fonctionnement même du générateur d'autorisations soulève quelques questions... :
