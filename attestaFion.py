@@ -68,7 +68,7 @@ def serve_pil_image(pil_img):
 
 @app.route('/qr')
 def get_qr_code():
-	user = request.args.get('username', None).lower()
+	user = request.args.get('username', None)
 	if user:
 		# get profiles data
 		with open("profiles.json") as f:
@@ -113,7 +113,7 @@ def fill_form(driver, user, now, date, hour):
 	# submit
 	submit_button = driver.find_element_by_id("generate-btn").click()
 
-@app.route('/pdf')
+@app.route('/attestation')
 def get_pdf():
 	user = request.args.get('username', None).lower()
 	if user:

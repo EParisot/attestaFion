@@ -1,12 +1,13 @@
 {
 	"infos": {
+		"instructions": "You must copy and paste a new user and replace every CAPITAL word by your informations",
+		"example": "the EXAMPLE value must be lowercase",
 		"reasons_values": ["travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"],
 		"reasons_infos": "No accents !! , those values are present in both curfew and quarantine",
-		"delay": "in minutes, represents the elapsed time between the time you made the attestation ;) and now",
-		"todo": "You must replace every CAPITAL word by your informations"
+		"delay": "in minutes, represents the elapsed time between the time you made the attestation ;) and now"
 	},
-	"FISRTNAME": {
-		"firstname": "FISRTNAME",
+	"EXAMPLE": {
+		"firstname": "FIRSTNAME",
 		"lastname": "LASTNAME",
 		"birthday": "BIRTHDAY",
 		"placeofbirth": "PLACEOFBIRTH",
@@ -14,6 +15,6 @@
 		"city": "CITY",
 		"zipcode": "ZIPCODE",
 		"reasons": ["REASON1", "REASON2"],
-		"delay": 30
+		"delay": 42
 	}
 }
