@@ -48,3 +48,5 @@ Naviguez vers localhost:8000 (ou votre ip publique, dans ce cas mappez le port c
 Renseignez vos données ainsi qu'une durée de délai (par exemple il est 16h, si vous renseignez un délai de 42 minutes, l'attestation générée présentera une heure de 15h18).
 
 Profitez de la liberté !
+
+## Le serveur ne conserve aucune attestation !
