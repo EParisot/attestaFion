@@ -132,18 +132,19 @@ def get_pdf():
 		options.add_argument('--headless')
 		options.add_argument('--disable-gpu')
 		options.add_argument('--disable-dev-shm-usage')
+		options.add_argument("--log-level=1")
 		# download pdf location
 		options.add_experimental_option('prefs', {
 			"download.default_directory": str(PureWindowsPath(ATTEST_PATH)) if platform.system() == "Windows" else ATTEST_PATH, #Change default directory for downloads
-			"download.prompt_for_download": False, #To auto download the file
 			"download.directory_upgrade": True,
+			"download.prompt_for_download": False, #To auto download the file
 			"plugins.always_open_pdf_externally": True, #It will not show PDF directly in chrome
 			"profile.default_content_settings.popups": False,
     		"credentials_enable_service": False
 		})
-
+		
 		try:
-			driver = webdriver.Chrome(options=options)
+			driver = webdriver.Chrome(options=options, service_args=["--verbose", "--log-path=/attestaFion/chromedriver.log"])
 		except Exception as e:
 			app.logger.error("Error: %s" % str(e))
 			flash("Woopsy, une erreur s'est produite...")
