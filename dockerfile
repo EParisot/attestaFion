@@ -31,4 +31,4 @@ RUN pip install -r requirements.txt
 
 RUN chmod -R 777 attestations
 
-CMD gunicorn attestaFion:app --workers 1 --threads 1 --timeout 0 -b 0.0.0.0:8000
+CMD gunicorn attestaFion:app --workers 1 --threads 1 --timeout 0 -b 0.0.0.0:8080

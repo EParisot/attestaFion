@@ -20,7 +20,7 @@ Voici donc un serveur qui utilise la meme addresse que ci dessus mais qui va "co
 # Installation Docker (recommandée)
 ```
 docker build -t attestafion .
-docker run -p 8000:8000 attestafion
+docker run -p 8080:8080 attestafion
 ```
 
 # Installation manuelle
@@ -41,7 +41,7 @@ Démarrez le serveur:
 python attestaFion.py
 ```
 (ou bien, si gunicorn est installé : 
-```gunicorn attestaFion:app --workers 1 --threads 1 --timeout 0 -b 0.0.0.0:8000```
+```gunicorn attestaFion:app --workers 1 --threads 1 --timeout 0 -b 0.0.0.0:8080```
 )
 
 # Usage
