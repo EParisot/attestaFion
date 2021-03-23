@@ -184,7 +184,7 @@ def get_pdf():
 		# rename file to avoid duplicates between users
 		try:
 			filepath = max([os.path.join(ATTEST_PATH, f) for f in os.listdir(ATTEST_PATH)], key=os.path.getctime)
-			filename = profile["firstname"] + "_" + os.path.basename(filepath)
+			filename = profile["lastname"] + "_" + profile["firstname"] + os.path.basename(filepath)
 			new_filename = os.path.join(ATTEST_PATH, filename)
 			shutil.move(filepath, new_filename)
 		except Exception as e:

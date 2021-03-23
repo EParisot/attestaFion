@@ -17,24 +17,32 @@ Voici donc un serveur qui utilise la meme addresse que ci dessus mais qui va "co
 
 (à héberger vous-memes localement, à vous d'utiliser Gunicorn, WSGI, etc selon vos besoins !)
 
-# instructions
+# Installation Docker (recommandée)
+```
+docker build -t attestafion .
+docker run -p 8000:8000 attestafion
+```
+
+# Installation manuelle
 Installer les dépendances:
 ```
 pip install -r requirements.txt
 ```
-### !!! Ce programme nécéssite Chrome 89 ainsi que chromedriver !!!
-chromedriver :
+
+Installer Firefox et geckodriver:
 ```
-wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+https://download-installer.cdn.mozilla.net/pub/firefox/releases/86.0.1/linux-x86_64/en-US/firefox-86.0.1.tar.bz2
+https://github.com/mozilla/geckodriver/releases/download/v0.29.0/geckodriver-v0.29.0-linux64.tar.gz
+(ce dernier doir être ajouté au $PATH)
 ```
 
 Démarrez le serveur:
 ```
 python attestaFion.py
 ```
-(ou bien, si gunicorn est installé : ```./run.sh``` )
+(ou bien, si gunicorn est installé : ```gunicorn attestaFion:app -b 0.0.0.0:8000``` )
 
+# Usage
 Naviguez vers localhost:8000 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur).
 
 Renseignez vos données ainsi qu'une durée de délai (par exemple il est 16h, si vous renseignez un délai de 42 minutes, l'attestation générée présentera une heure de 15h18).
