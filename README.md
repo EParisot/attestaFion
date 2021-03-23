@@ -22,15 +22,20 @@ Installer les dépendances:
 ```
 pip install -r requirements.txt
 ```
-### !!! Ce programme à besoin que Chrome 89 soit installé !!!
+### !!! Ce programme nécéssite Chrome 89 ainsi que chromedriver !!!
+chromedriver :
+```
+wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+```
 
 Démarrez le serveur:
 ```
 python attestaFion.py
 ```
-(ou bien, si gunicorn est installé : ```gunicorn attestaFion:app``` )
+(ou bien, si gunicorn est installé : ```./run.sh``` )
 
-Naviguez vers localhost:8080 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur).
+Naviguez vers localhost:8000 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur).
 
 Renseignez vos données ainsi qu'une durée de délai (par exemple il est 16h, si vous renseignez un délai de 42 minutes, l'attestation générée présentera une heure de 15h18).
 
