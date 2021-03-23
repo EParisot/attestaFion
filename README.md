@@ -4,7 +4,7 @@ AttestaFion, le générateur d'attestations COVID (pas comme les autres)
 **Avertissement: Cet outil n'a pas pour vocation à vous dispenser des restrictions COVID.**
 Cela dit il pourrait vous éviter de payer le prix fort une petite étourderie.
 
-Toutefois, le fonctionnement même du générateur d'autorisations soulève quelques questions... :
+Toutefois, le fonctionnement même du générateur d'autorisations officiel soulève quelques questions... :
 
 En essayant d'antidater une attestation obtenue via :
 https://media.interieur.gouv.fr/attestation-deplacement-derogatoire-covid-19/

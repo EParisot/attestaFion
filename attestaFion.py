@@ -14,7 +14,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-from flask import Flask, send_file, request, render_template, flash, redirect
+from flask import Flask, send_file, request, render_template, flash, redirect, after_this_request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, IntegerField, SubmitField
 from wtforms.validators import DataRequired
@@ -70,12 +70,6 @@ def make_qr_code(profile, now, date, hour):
 	img = qr.make_image(fill_color="black", back_color="white")
 	return img
 
-def serve_pil_image(pil_img):
-	img_io = BytesIO()
-	pil_img.save(img_io, 'JPEG', quality=70)
-	img_io.seek(0)
-	return send_file(img_io, mimetype='image/jpeg')
-
 def fill_form(driver, profile, now, date, hour):
 	# fill profile
 	firstname_input = driver.find_element_by_id("field-firstname").send_keys(profile["firstname"])
@@ -120,6 +114,7 @@ def get_pdf():
 		profile["delay"] = form.delay.data
 
 		now, date, hour = get_date(profile["delay"])
+		
 
 		if profile["reason"] == "achats" and (19 <= now.hour or now.hour < 6):
 			flash("Des achats pendant le couvre-feu ? T'es magique toi !")
@@ -190,8 +185,21 @@ def get_pdf():
 		page.Resources.XObject[page_image[0]] = rawimage
 		pdf_file.save(new_filename)
 
+		# program file cleaner
+		if platform.system() == "Linux":
+			file_handle = open(new_filename)
+			@after_this_request
+			def remove_file(response):
+				try:
+					os.remove(new_filename)
+					file_handle.close()
+				except:
+					app.logger.error("Error removing file")
+				return response
 		# send file to user
-		return send_file(new_filename, mimetype="application/pdf")
+			return send_file(file_handle, mimetype="application/pdf")
+		else:
+			return send_file(new_filename, mimetype="application/pdf")
 	return redirect("/")
 
 reasons = ["achats", "travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"]
@@ -203,7 +211,7 @@ class UserForm(FlaskForm):
 	address = StringField('Adresse:', validators=[DataRequired()])
 	city = StringField('Ville:', validators=[DataRequired()])
 	zipcode = StringField('Code postal:', validators=[DataRequired()])
-	reason = SelectField('Motif:', choices=reasons)
+	reason = SelectField('Motif:', choices=reasons, validators=[DataRequired()])
 	delay = IntegerField('Délai (minutes):')
 	submit = SubmitField('Générer')
 
