@@ -18,6 +18,7 @@ from flask import Flask, send_file, request, render_template, flash, redirect, a
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, IntegerField, SubmitField
 from wtforms.validators import DataRequired
+import logging
 
 import qrcode
 from io import BytesIO
@@ -31,9 +32,11 @@ import string
 import random
 
 DELAY = 3
-ATTEST_PATH = "C:/Users/Rock_/Desktop/attestaFion/attestations"
+
+ATTEST_PATH = os.path.join(Path(__file__).parent.absolute(), "attestations")
 
 app = Flask(__name__)
+app.logger.setLevel(logging.DEBUG)
 
 letters = string.ascii_lowercase
 app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
@@ -95,7 +98,11 @@ def fill_form(driver, profile, now, date, hour):
 		except:
 			pass
 	# submit
-	submit_button = driver.find_element_by_id("generate-btn").click()
+	try:
+		submit_button = driver.find_element_by_id("generate-btn").click()
+		app.logger.info("Download started...")
+	except Exception as e:
+		app.logger.error("Error: %s" % str(e))
 
 @app.route('/attestation', methods=['GET', 'POST'])
 def get_pdf():
@@ -114,7 +121,6 @@ def get_pdf():
 		profile["delay"] = form.delay.data
 
 		now, date, hour = get_date(profile["delay"])
-		
 
 		if profile["reason"] == "achats" and (19 <= now.hour or now.hour < 6):
 			flash("Des achats pendant le couvre-feu ? T'es magique toi !")
@@ -122,29 +128,25 @@ def get_pdf():
 		
 		# set driver options
 		options = webdriver.ChromeOptions()
-		options.headless = True
+		options.add_argument('--no-sandbox')
+		options.add_argument('--headless')
+		options.add_argument('--disable-gpu')
+		options.add_argument('--disable-dev-shm-usage')
 		# download pdf location
 		options.add_experimental_option('prefs', {
 			"download.default_directory": str(PureWindowsPath(ATTEST_PATH)) if platform.system() == "Windows" else ATTEST_PATH, #Change default directory for downloads
 			"download.prompt_for_download": False, #To auto download the file
 			"download.directory_upgrade": True,
-			"plugins.always_open_pdf_externally": True #It will not show PDF directly in chrome
+			"plugins.always_open_pdf_externally": True, #It will not show PDF directly in chrome
+			"profile.default_content_settings.popups": False,
+    		"credentials_enable_service": False
 		})
-		if platform.system() == "Windows":
-			webdriver_path = "webdrivers/chromedriver_win.exe"
-		elif platform.system() == "Linux":
-			webdriver_path = "webdrivers/chromedriver_linux"
-		elif platform.system() == "Darwin":
-			webdriver_path = "webdrivers/chromedriver_mac"
-		else:
-			app.logger.error("Error: server's system not identified...")
-			flash("Woopsy, une erreur s'est produite...")
-			return redirect("/")
-		webdriver_path = os.path.join(Path(__file__).parent.absolute(), webdriver_path)
+
 		try:
-			driver = webdriver.Chrome(executable_path=webdriver_path, options=options)
-		except:
-			app.logger.error("Error, Chrome not found on system, please install Chrome 89 on server...")
+			driver = webdriver.Chrome(options=options)
+		except Exception as e:
+			app.logger.error("Error: %s" % str(e))
+			flash("Woopsy, une erreur s'est produite...")
 			return redirect("/")
 
 		# get page	
@@ -160,19 +162,31 @@ def get_pdf():
 		except:
 			pass
 
+		files_nb = len(os.listdir(ATTEST_PATH))
+
 		# fill form
 		fill_form(driver, profile, now, date, hour)
 
 		# wait file to get there
-		time.sleep(DELAY)
+		i = 5
+		while i:
+			if len(os.listdir(ATTEST_PATH)) <= files_nb:
+				i -= 1
+				time.sleep(DELAY)
+			else:
+				break
+			if i == 0:
+				app.logger.error("Error: file not downloaded.")
+				flash("Woopsy, une erreur s'est produite...")
+				return redirect("/")
 
 		# rename file to avoid duplicates between users
 		try:
 			filename = max([os.path.join(ATTEST_PATH, f) for f in os.listdir(ATTEST_PATH)], key=os.path.getctime)
 			new_filename = os.path.join(ATTEST_PATH, profile["firstname"] + "_" + os.path.basename(filename))
 			shutil.move(filename, new_filename)
-		except:
-			app.logger.error("Error: renaming file failed.")
+		except Exception as e:
+			app.logger.error("Error: %s" % str(e))
 			flash("Woopsy, une erreur s'est produite...")
 			return redirect("/")
 

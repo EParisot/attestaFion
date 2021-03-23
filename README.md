@@ -20,7 +20,7 @@ Voici donc un serveur qui utilise la meme addresse que ci dessus mais qui va "co
 # instructions
 Installer les dépendances:
 ```
-pip install -r requirement.txt
+pip install -r requirements.txt
 ```
 ### !!! Ce programme à besoin que Chrome 89 soit installé !!!
 
