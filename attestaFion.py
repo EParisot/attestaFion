@@ -12,7 +12,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.chrome.options import Options
 
 from flask import Flask, send_file, request, render_template, flash, redirect, after_this_request
 from flask_wtf import FlaskForm
@@ -45,7 +44,7 @@ app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
 def get_date(user_delay):
 	now = datetime.now()
 	delta = timedelta(minutes=user_delay)
-	now -= delta
+	now -= delta - timedelta(hours=1)
 	date = now.strftime("%d/%m/%y")
 	hour = now.strftime("%Hh%M")
 	return now, date, hour
@@ -75,16 +74,17 @@ def make_qr_code(profile, now, date, hour):
 
 def fill_form(driver, profile, now, date, hour):
 	# fill profile
-	firstname_input = driver.find_element_by_id("field-firstname").send_keys(profile["firstname"])
-	lastname_input = driver.find_element_by_id("field-lastname").send_keys(profile["lastname"])
-	birthday_input = driver.find_element_by_id("field-birthday").send_keys(profile["birthday"])
-	placeofbirth_input = driver.find_element_by_id("field-placeofbirth").send_keys(profile["placeofbirth"])
-	address_input = driver.find_element_by_id("field-address").send_keys(profile["address"])
-	citye_input = driver.find_element_by_id("field-city").send_keys(profile["city"])
-	zipcode_input = driver.find_element_by_id("field-zipcode").send_keys(profile["zipcode"])
+	driver.find_element_by_id("field-firstname").send_keys(profile["firstname"])
+	driver.find_element_by_id("field-lastname").send_keys(profile["lastname"])
+	driver.find_element_by_id("field-birthday").send_keys(profile["birthday"])
+	driver.find_element_by_id("field-placeofbirth").send_keys(profile["placeofbirth"])
+	driver.find_element_by_id("field-address").send_keys(profile["address"])
+	driver.find_element_by_id("field-city").send_keys(profile["city"])
+	driver.find_element_by_id("field-zipcode").send_keys(profile["zipcode"])
 	# set hour
-	datesortie_input = driver.find_element_by_id("field-datesortie").send_keys(date)
-	heuresortie_input = driver.find_element_by_id("field-heuresortie").send_keys(hour)
+	driver.execute_script("document.getElementById('field-datesortie').valueAsDate = new Date(%s, %s, %s);" % (date.split("/")[2], date.split("/")[1], date.split("/")[0]))
+	driver.execute_script("document.getElementById('field-heuresortie').valueAsDate = new Date(1970, 1, 1, %s, %s);" % (hour.split("h")[0], hour.split("h")[1]))
+	
 	if (6 < now.hour < 19):
 		type_button = driver.find_element_by_class_name("quarantine-button").click()
 	else:
@@ -125,26 +125,26 @@ def get_pdf():
 		if profile["reason"] == "achats" and (19 <= now.hour or now.hour < 6):
 			flash("Des achats pendant le couvre-feu ? T'es magique toi !")
 			return redirect("/")
-		
-		# set driver options
-		options = webdriver.ChromeOptions()
-		options.add_argument('--no-sandbox')
-		options.add_argument('--headless')
-		options.add_argument('--disable-gpu')
-		options.add_argument('--disable-dev-shm-usage')
-		options.add_argument("--log-level=1")
-		# download pdf location
-		options.add_experimental_option('prefs', {
-			"download.default_directory": str(PureWindowsPath(ATTEST_PATH)) if platform.system() == "Windows" else ATTEST_PATH, #Change default directory for downloads
-			"download.directory_upgrade": True,
-			"download.prompt_for_download": False, #To auto download the file
-			"plugins.always_open_pdf_externally": True, #It will not show PDF directly in chrome
-			"profile.default_content_settings.popups": False,
-    		"credentials_enable_service": False
-		})
+
+		fp = webdriver.FirefoxProfile()
+		fp.set_preference("browser.download.folderList", 2)
+		fp.set_preference("browser.download.dir", str(PureWindowsPath(ATTEST_PATH)) if platform.system() == "Windows" else ATTEST_PATH)
+		fp.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/pdf, attachment/pdf")
+		fp.set_preference("browser.download.manager.showWhenStarting",False)
+		fp.set_preference("browser.helperApps.neverAsk.openFile","application/pdf")
+		fp.set_preference("browser.helperApps.alwaysAsk.force", False)
+		fp.set_preference("browser.download.manager.useWindow", False)
+		fp.set_preference("browser.download.manager.focusWhenStarting", False)
+		fp.set_preference("browser.download.manager.alertOnEXEOpen", False)
+		fp.set_preference("browser.download.manager.showAlertOnComplete", False)
+		fp.set_preference("browser.download.manager.closeWhenDone", True)
+		fp.set_preference("pdfjs.disabled", True)
+
+		options = webdriver.firefox.options.Options()
+		options.add_argument("--headless")
 		
 		try:
-			driver = webdriver.Chrome(options=options, service_args=["--verbose", "--log-path=/attestaFion/chromedriver.log"])
+			driver = webdriver.Firefox(options=options, firefox_profile=fp)
 		except Exception as e:
 			app.logger.error("Error: %s" % str(e))
 			flash("Woopsy, une erreur s'est produite...")
@@ -183,9 +183,10 @@ def get_pdf():
 
 		# rename file to avoid duplicates between users
 		try:
-			filename = max([os.path.join(ATTEST_PATH, f) for f in os.listdir(ATTEST_PATH)], key=os.path.getctime)
-			new_filename = os.path.join(ATTEST_PATH, profile["firstname"] + "_" + os.path.basename(filename))
-			shutil.move(filename, new_filename)
+			filepath = max([os.path.join(ATTEST_PATH, f) for f in os.listdir(ATTEST_PATH)], key=os.path.getctime)
+			filename = profile["firstname"] + "_" + os.path.basename(filepath)
+			new_filename = os.path.join(ATTEST_PATH, filename)
+			shutil.move(filepath, new_filename)
 		except Exception as e:
 			app.logger.error("Error: %s" % str(e))
 			flash("Woopsy, une erreur s'est produite...")
@@ -203,20 +204,19 @@ def get_pdf():
 		pdf_file.save(new_filename)
 
 		# program file cleaner
-		if platform.system() == "Linux":
-			file_handle = open(new_filename)
-			@after_this_request
-			def remove_file(response):
-				try:
-					os.remove(new_filename)
-					file_handle.close()
-				except:
-					app.logger.error("Error removing file")
-				return response
-		# send file to user
-			return send_file(file_handle, mimetype="application/pdf")
-		else:
-			return send_file(new_filename, mimetype="application/pdf")
+		file_handle = open(new_filename, 'rb')
+
+		# This *replaces* the `remove_file` + @after_this_request code above
+		def stream_and_remove_file():
+			yield from file_handle
+			file_handle.close()
+			os.remove(new_filename)
+
+		return app.response_class(
+			stream_and_remove_file(),
+			mimetype='application/pdf',
+			headers={'Content-Disposition': 'attachment', 'filename': filename}
+		)
 	return redirect("/")
 
 reasons = ["achats", "travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"]

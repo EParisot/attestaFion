@@ -1,18 +1,23 @@
-FROM sgrio/ubuntu-python:3
+FROM python:3
 
 RUN apt-get update -y
-RUN apt-get install -yqq unzip curl wget gnupg gnupg2 gnupg1
+RUN apt-get install -yqq unzip curl wget build-essential libgl1-mesa-glx libgtk-3-dev
 
-# install google chrome
-#RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-#RUN sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-#RUN apt-get -y update
-#RUN apt-get install -y google-chrome-stable
-RUN apt-get install -y chromium-browser
+# install Firefox
+ARG FIREFOX_VERSION=86.0.1
+RUN wget -q https://download-installer.cdn.mozilla.net/pub/firefox/releases/$FIREFOX_VERSION/linux-x86_64/en-US/firefox-$FIREFOX_VERSION.tar.bz2 -O /tmp/firefox.tar.bz2 \
+   && rm -rf /opt/firefox \
+   && tar -C /opt -xjf /tmp/firefox.tar.bz2 \
+   && rm /tmp/firefox.tar.bz2 \
+   && mv /opt/firefox /opt/firefox-$FIREFOX_VERSION \
+   && ln -fs /opt/firefox-$FIREFOX_VERSION/firefox /usr/bin/firefox \
+   && apt-get install libdbus-glib-1-2
 
-# install chromedriver
-RUN wget -O /tmp/chromedriver.zip http://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
-RUN unzip /tmp/chromedriver.zip chromedriver -d /usr/local/bin/
+# install geckodriver
+ARG GECKODRIVER_VERSION=0.29.0
+RUN wget -q https://github.com/mozilla/geckodriver/releases/download/v$GECKODRIVER_VERSION/geckodriver-v$GECKODRIVER_VERSION-linux64.tar.gz -O /tmp/geckodriver.tgz \
+    && tar zxf /tmp/geckodriver.tgz -C /usr/bin/ \
+    && rm /tmp/geckodriver.tgz
 
 # We copy just the requirements.txt first to leverage Docker cache
 COPY ./requirements.txt /attestaFion/requirements.txt
