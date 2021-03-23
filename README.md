@@ -40,7 +40,9 @@ Démarrez le serveur:
 ```
 python attestaFion.py
 ```
-(ou bien, si gunicorn est installé : ```gunicorn attestaFion:app -b 0.0.0.0:8000``` )
+(ou bien, si gunicorn est installé : 
+```gunicorn attestaFion:app --workers 1 --threads 1 --timeout 0 -b 0.0.0.0:8000```
+)
 
 # Usage
 Naviguez vers localhost:8000 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur).
