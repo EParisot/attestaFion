@@ -137,13 +137,14 @@ def get_pdf():
 		elif platform.system() == "Darwin":
 			webdriver_path = "webdrivers/chromedriver_mac"
 		else:
-			flash("Woopsy, server's system not identified...")
+			app.logger.error("Error: server's system not identified...")
+			flash("Woopsy, une erreur s'est produite...")
 			return redirect("/")
 		webdriver_path = os.path.join(Path(__file__).parent.absolute(), webdriver_path)
 		try:
 			driver = webdriver.Chrome(executable_path=webdriver_path, options=options)
 		except:
-			flash("Error, Chrome not found on system, please install Chrome 89 on server...")
+			app.logger.error("Error, Chrome not found on system, please install Chrome 89 on server...")
 			return redirect("/")
 
 		# get page	
@@ -171,6 +172,7 @@ def get_pdf():
 			new_filename = os.path.join(ATTEST_PATH, profile["firstname"] + "_" + os.path.basename(filename))
 			shutil.move(filename, new_filename)
 		except:
+			app.logger.error("Error: renaming file failed.")
 			flash("Woopsy, une erreur s'est produite...")
 			return redirect("/")
 
