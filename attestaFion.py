@@ -31,7 +31,7 @@ import string
 import random
 
 DELAY = 3
-ATTEST_PATH = "C:/Users/Rock_/Desktop/attestaFion/attestations"
+ATTEST_PATH = os.getcwd().replace('\\', '/') + "/attestations"
 
 app = Flask(__name__)
 
