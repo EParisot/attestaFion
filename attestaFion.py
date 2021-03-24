@@ -30,16 +30,22 @@ from PIL import Image
 import string
 import random
 
-DELAY = 3
+DEBUG = True
 
-ATTEST_PATH = os.path.join(Path(__file__).parent.absolute(), "attestations")
+if DEBUG == False:
+	from google.cloud import secretmanager
+	secrets = secretmanager.SecretManagerServiceClient()
+	app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/attestafion/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
-letters = string.ascii_lowercase
-app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
+if DEBUG == True:
+	letters = string.ascii_lowercase
+	app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
 
+DELAY = 3
+ATTEST_PATH = os.path.join(Path(__file__).parent.absolute(), "attestations")
 
 def get_date(user_delay):
 	now = datetime.now()

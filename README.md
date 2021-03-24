@@ -15,8 +15,19 @@ Ainsi, au moment du contrôle une bien mauvaise surprise vous attends... Pas coo
 
 Voici donc un serveur qui utilise la meme addresse que ci dessus mais qui va "corriger" le QRcode afin de couvrir votre Fion...
 
-(à héberger vous-memes localement, à vous d'utiliser Gunicorn, WSGI, etc selon vos besoins !)
+Disponible ici :
+# https://attestafion-a4j2wdhiza-nw.a.run.app/
 
+# Usage
+Naviguez vers l'adresse ci dessus.
+
+Renseignez vos données ainsi qu'une durée de délai (par exemple il est 16h, si vous renseignez un délai de 42 minutes, l'attestation générée présentera une heure de 15h18).
+
+Profitez de la liberté !
+
+## Le serveur ne conserve aucune donnée ni attestation !
+
+Si vous souhaitez héberger vous meme le service:
 # Installation Docker (recommandée)
 ```
 docker build -t attestafion .
@@ -43,12 +54,3 @@ python attestaFion.py
 (ou bien, si gunicorn est installé : 
 ```gunicorn attestaFion:app --workers 1 --threads 1 --timeout 0 -b 0.0.0.0:8080```
 )
-
-# Usage
-Naviguez vers localhost:8000 (ou votre ip publique, dans ce cas mappez le port correspondant à la machine qui heberge le serveur).
-
-Renseignez vos données ainsi qu'une durée de délai (par exemple il est 16h, si vous renseignez un délai de 42 minutes, l'attestation générée présentera une heure de 15h18).
-
-Profitez de la liberté !
-
-## Le serveur ne conserve aucune attestation !
