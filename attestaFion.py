@@ -34,7 +34,7 @@ app.logger.setLevel(logging.DEBUG)
 
 
 secrets = secretmanager.SecretManagerServiceClient()
-app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/attestafion/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
+app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/647590483524/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
 
 
 DELAY = 3
