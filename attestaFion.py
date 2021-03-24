@@ -27,14 +27,15 @@ import zlib
 
 from PIL import Image
 
-from google.cloud import secretmanager
+import google.auth
+from google.cloud import secretmanager_v1 as sm
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
-secrets = secretmanager.SecretManagerServiceClient()
-app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/attestafion/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
-
+client = sm.SecretManagerServiceClient()
+name = "projects/attestafion/secrets/secret_key/versions/1"
+app.config['SECRET_KEY'] = client.access_secret_version(name=name).payload.data.decode("UTF-8")
 
 DELAY = 3
 ATTEST_PATH = os.path.join(Path(__file__).parent.absolute(), "attestations")
