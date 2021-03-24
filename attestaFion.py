@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from flask import Flask, send_file, request, render_template, flash, redirect, after_this_request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, IntegerField, SubmitField
+from wtforms import StringField, SelectField, IntegerField, SubmitField, DateField
 from wtforms.validators import DataRequired
 import logging
 
@@ -112,7 +112,7 @@ def get_pdf():
 		profile = {}
 		profile["firstname"] = form.firstname.data
 		profile["lastname"] = form.lastname.data
-		profile["birthday"] = form.birthday.data
+		profile["birthday"] = form.birthday.data.strftime("%d/%m/%Y")
 		profile["placeofbirth"] = form.placeofbirth.data
 		profile["address"] = form.address.data
 		profile["city"] = form.city.data
@@ -223,14 +223,14 @@ reasons = ["achats", "travail", "sante", "famille", "handicap", "transit", "miss
 class UserForm(FlaskForm):
 	firstname = StringField('Prénom', validators=[DataRequired()])
 	lastname = StringField('Nom', validators=[DataRequired()])
-	birthday = StringField('Date de naissance', validators=[DataRequired()])
+	birthday = DateField('Date de naissance', format="%d/%m/%Y")
 	placeofbirth = StringField('Lieu de naissance', validators=[DataRequired()])
 	address = StringField('Adresse', validators=[DataRequired()])
 	city = StringField('Ville', validators=[DataRequired()])
 	zipcode = StringField('Code postal', validators=[DataRequired()])
 	reason = SelectField('Motif', choices=reasons, validators=[DataRequired()])
-	delay = IntegerField('Délai (minutes)', validators=[DataRequired()])
-	submit = SubmitField('Générer', default=0)
+	delay = IntegerField('Délai (minutes)', default=0)
+	submit = SubmitField('Générer')
 
 @app.route('/')
 def main():
