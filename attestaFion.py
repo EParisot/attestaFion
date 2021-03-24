@@ -34,9 +34,17 @@ import random
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
+from google.cloud import secretmanager
 
-letters = string.ascii_lowercase
-app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
+DEBUG = True
+
+if DEBUG:
+	letters = string.ascii_lowercase
+	app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
+else:
+	secrets = secretmanager.SecretManagerServiceClient()
+	app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/647590483524/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
+
 
 DELAY = 3
 ATTEST_PATH = os.path.join(Path(__file__).parent.absolute(), "attestations")
@@ -45,7 +53,7 @@ def get_date(user_delay):
 	now = datetime.now()
 	delta = timedelta(minutes=user_delay)
 	now -= delta - timedelta(hours=1)
-	date = now.strftime("%d/%m/%y")
+	date = now.strftime("%d/%m/%Y")
 	hour = now.strftime("%Hh%M")
 	return now, date, hour
 
@@ -82,7 +90,7 @@ def fill_form(driver, profile, now, date, hour):
 	driver.find_element_by_id("field-city").send_keys(profile["city"])
 	driver.find_element_by_id("field-zipcode").send_keys(profile["zipcode"])
 	# set hour
-	driver.execute_script("document.getElementById('field-datesortie').valueAsDate = new Date(%s, %s, %s);" % ("20" + date.split("/")[2], str(int(date.split("/")[1]) - 1), date.split("/")[0]))
+	driver.execute_script("document.getElementById('field-datesortie').valueAsDate = new Date(%s, %s, %s);" % (date.split("/")[2], str(int(date.split("/")[1]) - 1), date.split("/")[0]))
 	driver.execute_script("document.getElementById('field-heuresortie').valueAsDate = new Date(1970, 1, 1, %s, %s);" % (hour.split("h")[0], hour.split("h")[1]))
 	
 	if (6 < now.hour < 19):
