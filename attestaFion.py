@@ -230,7 +230,7 @@ class UserForm(FlaskForm):
 	zipcode = StringField('Code postal:', validators=[DataRequired()])
 	reason = SelectField('Motif:', choices=reasons, validators=[DataRequired()])
 	delay = IntegerField('Délai (minutes):')
-	submit = SubmitField('Générer')
+	submit = SubmitField('Générer', default=0)
 
 @app.route('/')
 def main():
