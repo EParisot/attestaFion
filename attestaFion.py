@@ -228,7 +228,7 @@ class UserForm(FlaskForm):
 	city = StringField('Ville:', validators=[DataRequired()])
 	zipcode = StringField('Code postal:', validators=[DataRequired()])
 	reason = SelectField('Motif:', choices=reasons, validators=[DataRequired()])
-	delay = IntegerField('Délai (minutes):')
+	delay = IntegerField('Délai (minutes):', default=0)
 	submit = SubmitField('Générer')
 
 @app.route('/')
