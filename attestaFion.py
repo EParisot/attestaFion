@@ -81,7 +81,7 @@ def fill_form(driver, profile, now, date, hour):
 	driver.find_element_by_id("field-city").send_keys(profile["city"])
 	driver.find_element_by_id("field-zipcode").send_keys(profile["zipcode"])
 	# set hour
-	driver.execute_script("document.getElementById('field-datesortie').valueAsDate = new Date(%s, %s, %s);" % (date.split("/")[2], date.split("/")[1], date.split("/")[0]))
+	driver.execute_script("document.getElementById('field-datesortie').valueAsDate = new Date(%s, %s, %s);" % ("20" + date.split("/")[2], str(int(date.split("/")[1]) - 1), date.split("/")[0]))
 	driver.execute_script("document.getElementById('field-heuresortie').valueAsDate = new Date(1970, 1, 1, %s, %s);" % (hour.split("h")[0], hour.split("h")[1]))
 	
 	if (6 < now.hour < 19):
