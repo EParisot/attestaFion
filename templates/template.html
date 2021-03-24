@@ -1,106 +1,4 @@
 <html>
-<<<<<<< HEAD
-    <head>
-		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="viewport" content="height=device-height, initial-scale=1.0">
-        <title>AttestaFion</title>
-    </head>
-    <body>
-		<style>
-			form {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-			}
-
-			input {
-				max-width: 250px;
-			}
-
-			#main, #submit {
-				height: 100%;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				text-align: center;
-			}
-
-		</style>
-		<div id="main">
-			<h1>AttestaFion</h1>
-			<h2>Le générateur d'attestations COVID</h2>
-			<h3>(pas comme les autres)</h3>
-			<form action="/attestation" method="post" novalidate>
-				{{ form.hidden_tag() }}
-
-				{% with messages = get_flashed_messages() %}
-				{% if messages %}
-				<ul>
-					{% for message in messages %}
-					<span style="color: red;">{{ message }}</span>
-					{% endfor %}
-				</ul>
-				{% endif %}
-				{% endwith %}
-				
-				<p>
-					{{ form.firstname.label }}<br>
-					{{ form.firstname(size=64) }}
-				</p>
-
-				<p>
-					{{ form.lastname.label }}<br>
-					{{ form.lastname(size=64) }}
-				</p>
-
-				<p>
-					{{ form.birthday.label }}<br>
-					{{ form.birthday(size=64) }}
-				</p>
-
-				<p>
-					{{ form.placeofbirth.label }}<br>
-					{{ form.placeofbirth(size=64) }}
-				</p>
-
-				<p>
-					{{ form.address.label }}<br>
-					{{ form.address(size=64) }}
-				</p>
-
-				<p>
-					{{ form.city.label }}<br>
-					{{ form.city(size=64) }}
-				</p>
-
-				<p>
-					{{ form.zipcode.label }}<br>
-					{{ form.zipcode(size=5) }}
-				</p>
-
-				<p>
-					{{ form.reason.label }}<br>
-					{{ form.reason() }}
-				</p>
-
-				<p>
-					{{ form.delay.label }}<br>
-					{{ form.delay(size=5) }}
-				</p>
-				<p>exemple:</p> 
-				<p>il est 16h, si vous renseignez un délai de 42 minutes, </p>
-				<p>l'attestation générée présentera une heure de 15h18</p>
-
-				<div id="submit">
-					<p>{{ form.submit() }}</p>
-					<a href="https://www.buymeacoffee.com/attestafion"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=attestafion&button_colour=FF5F5F&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
-				</div>
-			</form>
-
-			<h3>Vos données ne sont pas enregistrées.</h3>
-			<h3>L'attestation est détruite à la fin du téléchargement.</h3>
-=======
 
 <head>
 	<meta charset="UTF-8">
@@ -301,7 +199,7 @@
 			</div>
 			<h3>Le générateur d'attestations COVID</h3>
 			<h4>(pas comme les autres)</h4>
->>>>>>> main
+
 		</div>
 		<form action="/attestation" method="post" novalidate>
 			{{ form.hidden_tag() }}
@@ -432,9 +330,4 @@
 		</form>
 </body>
 
-<<<<<<< HEAD
-		
-    </body>
-=======
->>>>>>> main
 </html>
