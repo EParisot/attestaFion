@@ -11,7 +11,7 @@
 			}
 
 			input {
-				width: 250px;
+				max-width: 250px;
 			}
 
 			#main {
@@ -19,6 +19,7 @@
 				flex-direction: column;
 				align-items: center;
 			}
+
 		</style>
 		<div id="main">
 			<h1>AttestaFion</h1>
@@ -83,13 +84,16 @@
 				</p>
 				<p>exemple: il est 16h, si vous renseignez un délai de 42 minutes, l'attestation générée présentera une heure de 15h18</p>
 
-				<p>{{ form.submit() }}</p>
+				<div>
+					<p>{{ form.submit() }}</p>
+					<a href="https://www.buymeacoffee.com/attestafion"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=attestafion&button_colour=FF5F5F&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
+				</div>
 			</form>
 
 			<h3>Vos données ne sont pas enregistrées.</h3>
 			<h3>L'attestation est détruite à la fin du téléchargement.</h3>
 		</div>
 
-		<script data-name="BMC-Widget" data-cfasync="false" src="https://cdnjs.buymeacoffee.com/1.0.0/widget.prod.min.js" data-id="attestafion" data-description="Support me on Buy me a coffee!" data-message="" data-color="#FF813F" data-position="Right" data-x_margin="18" data-y_margin="18"></script>
+		
     </body>
 </html>
