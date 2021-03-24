@@ -27,16 +27,14 @@ import zlib
 
 from PIL import Image
 
-import string
-import random
-
+from google.cloud import secretmanager
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
+secrets = secretmanager.SecretManagerServiceClient()
+app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/attestafion/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
 
-letters = string.ascii_lowercase
-app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
 
 DELAY = 3
 ATTEST_PATH = os.path.join(Path(__file__).parent.absolute(), "attestations")
