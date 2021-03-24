@@ -15,7 +15,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 from flask import Flask, send_file, request, render_template, flash, redirect, after_this_request
 from flask_wtf import FlaskForm
-from wtforms import StringField, SelectField, IntegerField, SubmitField
+from wtforms import StringField, SelectField, IntegerField, SubmitField, DateField
 from wtforms.validators import DataRequired
 import logging
 
@@ -27,15 +27,21 @@ import zlib
 
 from PIL import Image
 
-from google.cloud import secretmanager
-
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
+import string
+import random
+from google.cloud import secretmanager
 
-secrets = secretmanager.SecretManagerServiceClient()
-app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/647590483524/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
+DEBUG = False
 
+if DEBUG:
+	letters = string.ascii_lowercase
+	app.config['SECRET_KEY'] = ''.join(random.choice(letters) for i in range(64))
+else:
+	secrets = secretmanager.SecretManagerServiceClient()
+	app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/647590483524/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
 
 DELAY = 3
 ATTEST_PATH = os.path.join(Path(__file__).parent.absolute(), "attestations")
@@ -44,7 +50,7 @@ def get_date(user_delay):
 	now = datetime.now()
 	delta = timedelta(minutes=user_delay)
 	now -= delta - timedelta(hours=1)
-	date = now.strftime("%d/%m/%y")
+	date = now.strftime("%d/%m/%Y")
 	hour = now.strftime("%Hh%M")
 	return now, date, hour
 
@@ -81,7 +87,7 @@ def fill_form(driver, profile, now, date, hour):
 	driver.find_element_by_id("field-city").send_keys(profile["city"])
 	driver.find_element_by_id("field-zipcode").send_keys(profile["zipcode"])
 	# set hour
-	driver.execute_script("document.getElementById('field-datesortie').valueAsDate = new Date(%s, %s, %s);" % ("20" + date.split("/")[2], str(int(date.split("/")[1]) - 1), date.split("/")[0]))
+	driver.execute_script("document.getElementById('field-datesortie').valueAsDate = new Date(%s, %s, %s);" % (date.split("/")[2], str(int(date.split("/")[1]) - 1), date.split("/")[0]))
 	driver.execute_script("document.getElementById('field-heuresortie').valueAsDate = new Date(1970, 1, 1, %s, %s);" % (hour.split("h")[0], hour.split("h")[1]))
 	
 	if (6 < now.hour < 19):
@@ -111,7 +117,7 @@ def get_pdf():
 		profile = {}
 		profile["firstname"] = form.firstname.data
 		profile["lastname"] = form.lastname.data
-		profile["birthday"] = form.birthday.data
+		profile["birthday"] = form.birthday.data.strftime("%d/%m/%Y")
 		profile["placeofbirth"] = form.placeofbirth.data
 		profile["address"] = form.address.data
 		profile["city"] = form.city.data
@@ -220,15 +226,15 @@ def get_pdf():
 
 reasons = ["achats", "travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"]
 class UserForm(FlaskForm):
-	firstname = StringField('Prénom:', validators=[DataRequired()])
-	lastname = StringField('Nom:', validators=[DataRequired()])
-	birthday = StringField('Date de naissance (XX/XX/XXXX):', validators=[DataRequired()])
-	placeofbirth = StringField('Lieu de naissance:', validators=[DataRequired()])
-	address = StringField('Adresse:', validators=[DataRequired()])
-	city = StringField('Ville:', validators=[DataRequired()])
-	zipcode = StringField('Code postal:', validators=[DataRequired()])
-	reason = SelectField('Motif:', choices=reasons, validators=[DataRequired()])
-	delay = IntegerField('Délai (minutes):', default=0)
+	firstname = StringField('Prénom', validators=[DataRequired()])
+	lastname = StringField('Nom', validators=[DataRequired()])
+	birthday = DateField('Date de naissance', format="%d/%m/%Y")
+	placeofbirth = StringField('Lieu de naissance', validators=[DataRequired()])
+	address = StringField('Adresse', validators=[DataRequired()])
+	city = StringField('Ville', validators=[DataRequired()])
+	zipcode = StringField('Code postal', validators=[DataRequired()])
+	reason = SelectField('Motif', choices=reasons, validators=[DataRequired()])
+	delay = IntegerField('Délai (minutes)', default=0)
 	submit = SubmitField('Générer')
 
 @app.route('/')
