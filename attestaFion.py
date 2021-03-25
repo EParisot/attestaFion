@@ -16,6 +16,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from flask import Flask, send_file, request, render_template, flash, redirect, after_this_request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, IntegerField, SubmitField, DateField
+from wtforms.fields import html5 as h5fields
+from wtforms.widgets import html5 as h5widgets
 from wtforms.validators import DataRequired
 import logging
 
@@ -27,16 +29,14 @@ import zlib
 
 from PIL import Image
 
-import string
-import random
-
-
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
+import string
+import random
 from google.cloud import secretmanager
 
-DEBUG = True
+DEBUG = True # pass it to True to run locally
 
 if DEBUG:
 	letters = string.ascii_lowercase
@@ -44,7 +44,6 @@ if DEBUG:
 else:
 	secrets = secretmanager.SecretManagerServiceClient()
 	app.config['SECRET_KEY'] = secrets.access_secret_version(request={"name": "projects/647590483524/secrets/secret_key/versions/1"}).payload.data.decode("utf-8")
-
 
 DELAY = 3
 ATTEST_PATH = os.path.join(Path(__file__).parent.absolute(), "attestations")
@@ -238,6 +237,7 @@ class UserForm(FlaskForm):
 	zipcode = StringField('Code postal', validators=[DataRequired()])
 	reason = SelectField('Motif', choices=reasons, validators=[DataRequired()])
 	delay = IntegerField('Délai (minutes)', default=0)
+	delay = h5fields.IntegerField('Délai (minutes)', widget=h5widgets.NumberInput(), default=0)
 	submit = SubmitField('Générer')
 
 @app.route('/')
