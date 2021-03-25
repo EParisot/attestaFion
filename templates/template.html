@@ -27,11 +27,14 @@
 			justify-content: center;
 			min-height: 100vh;
 			padding: 40px;
+			width: auto;
+			height: auto;
 			background: radial-gradient(ellipse at bottom, #5091DD 0%, #030617 100%);
 		}
 
 		.container {
-			max-width: 800px;
+			max-width: 900px;
+			min-width: 280px;;
 			background: #fff;
 			width: auto;
 			height: auto;
@@ -75,7 +78,7 @@
 			width: 100%;
 			height: 100%;
 			border: none;
-			font-size: 17px;
+			font-size: 16px;
 			border-bottom: 2px solid rgba(0, 0, 0, 0.12);
 		}
 
@@ -85,7 +88,7 @@
 			width: 100%;
 			height: 100%;
 			border: none;
-			font-size: 17px;
+			font-size: 16px;
 			border-bottom: 2px solid rgba(0, 0, 0, 0.12);
 		}
 
@@ -176,7 +179,14 @@
 			padding-bottom: 3px;
 		}
 
-		@media (max-width: 700px) {
+		@media (max-width: 380px) {
+			body {
+				padding: 0px;
+			}
+		}
+		
+		@media (max-width: 538px) {
+
 			.container .text {
 				font-size: 16px;
 			}
@@ -197,10 +207,10 @@
 	<div class="container">
 		<div class="text">
 			<div class="title">
-				<h2>AttestaFion</h2>
+				<p>AttestaFion</p>
 			</div>
-			<h3>Le générateur d'attestations COVID</h3>
-			<h4>(pas comme les autres)</h4>
+			<p>Le générateur d'attestations COVID</p>
+			<p>(pas comme les autres)</p>
 		</div>
 		<form action="/attestation" method="post" novalidate>
 			{{ form.hidden_tag() }}
