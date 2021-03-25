@@ -16,6 +16,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from flask import Flask, send_file, request, render_template, flash, redirect, after_this_request
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, IntegerField, SubmitField, DateField
+from wtforms.fields import html5 as h5fields
+from wtforms.widgets import html5 as h5widgets
 from wtforms.validators import DataRequired
 import logging
 
@@ -34,7 +36,7 @@ import string
 import random
 from google.cloud import secretmanager
 
-DEBUG = False
+DEBUG = False # pass it to True to run locally
 
 if DEBUG:
 	letters = string.ascii_lowercase
@@ -235,6 +237,7 @@ class UserForm(FlaskForm):
 	zipcode = StringField('Code postal', validators=[DataRequired()])
 	reason = SelectField('Motif', choices=reasons, validators=[DataRequired()])
 	delay = IntegerField('Délai (minutes)', default=0)
+	delay = h5fields.IntegerField('Délai (minutes)', widget=h5widgets.NumberInput(), default=0)
 	submit = SubmitField('Générer')
 
 @app.route('/')
