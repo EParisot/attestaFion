@@ -1,9 +1,11 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="viewport" content="height=device-height, initial-scale=1.0">
+	<meta name="description" content="Le générateur d'attestations COVID (pas comme les autres)">
 	<title>AttestaFion</title>
 </head>
 
@@ -25,11 +27,14 @@
 			justify-content: center;
 			min-height: 100vh;
 			padding: 40px;
+			width: auto;
+			height: auto;
 			background: radial-gradient(ellipse at bottom, #5091DD 0%, #030617 100%);
 		}
 
 		.container {
-			max-width: 800px;
+			max-width: 900px;
+			min-width: 280px;;
 			background: #fff;
 			width: auto;
 			height: auto;
@@ -73,7 +78,7 @@
 			width: 100%;
 			height: 100%;
 			border: none;
-			font-size: 17px;
+			font-size: 16px;
 			border-bottom: 2px solid rgba(0, 0, 0, 0.12);
 		}
 
@@ -83,7 +88,7 @@
 			width: 100%;
 			height: 100%;
 			border: none;
-			font-size: 17px;
+			font-size: 16px;
 			border-bottom: 2px solid rgba(0, 0, 0, 0.12);
 		}
 
@@ -91,9 +96,9 @@
 		.textarea textarea:focus~label,
 		.input-data input:valid~label,
 		.textarea textarea:valid~label {
-			transform: translateY(-20px);
+			transform: translateY(-2rem);
 			font-size: 14px;
-			color: #3498db;
+			color: #2e5a8d;
 		}
 
 		.textarea textarea {
@@ -105,7 +110,7 @@
 			position: absolute;
 			width: 100%;
 			pointer-events: none;
-			bottom: 10px;
+			bottom: 0.1rem;
 			font-size: 16px;
 			transition: all 0.3s ease;
 		}
@@ -154,7 +159,7 @@
 		}
 
 		.submit-btn .input-data input {
-			background-color: #5091DD;
+			background-color: #2e5a8d;
 			width: 200px;
 			height: 45px;
 			color: #fff;
@@ -167,14 +172,21 @@
 		}
 
 		.submit-btn .input-data input:hover {
-			background-color: #3e6ca1;
+			background-color: #234469;
 		}
 
 		.form-group {
 			padding-bottom: 3px;
 		}
 
-		@media (max-width: 700px) {
+		@media (max-width: 380px) {
+			body {
+				padding: 0px;
+			}
+		}
+		
+		@media (max-width: 538px) {
+
 			.container .text {
 				font-size: 16px;
 			}
@@ -195,11 +207,10 @@
 	<div class="container">
 		<div class="text">
 			<div class="title">
-				<h2>AttestaFion</h2>
+				<p>AttestaFion</p>
 			</div>
-			<h3>Le générateur d'attestations COVID</h3>
-			<h4>(pas comme les autres)</h4>
-
+			<p>Le générateur d'attestations COVID</p>
+			<p>(pas comme les autres)</p>
 		</div>
 		<form action="/attestation" method="post" novalidate>
 			{{ form.hidden_tag() }}
@@ -319,7 +330,7 @@
 			</div>
 			<div class="form-group">
 				<div class="coffe-btn">
-					<a href="https://www.buymeacoffee.com/attestafion"><img alt="buyMeACoffe"
+					<a href="https://www.buymeacoffee.com/attestafion"><img alt="buyMeACoffe" width="235px" height="35px"
 							src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=attestafion&button_colour=FF5F5F&font_colour=ffffff&font_family=Cookie&outline_colour=000000&coffee_colour=FFDD00"></a>
 				</div>
 			</div>

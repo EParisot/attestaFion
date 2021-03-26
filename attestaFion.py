@@ -230,7 +230,7 @@ reasons = ["achats", "travail", "sante", "famille", "handicap", "transit", "miss
 class UserForm(FlaskForm):
 	firstname = StringField('Prénom', validators=[DataRequired()])
 	lastname = StringField('Nom', validators=[DataRequired()])
-	birthday = DateField('Date de naissance', format="%d/%m/%Y")
+	birthday = DateField('Date de naissance', validators=[DataRequired()], format="%d/%m/%Y")
 	placeofbirth = StringField('Lieu de naissance', validators=[DataRequired()])
 	address = StringField('Adresse', validators=[DataRequired()])
 	city = StringField('Ville', validators=[DataRequired()])
