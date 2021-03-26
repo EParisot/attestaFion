@@ -36,7 +36,7 @@ import string
 import random
 from google.cloud import secretmanager
 
-DEBUG = True # pass it to True to run locally
+DEBUG = False # pass it to True to run locally
 
 if DEBUG:
 	letters = string.ascii_lowercase
