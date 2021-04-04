@@ -36,7 +36,7 @@ import string
 import random
 from google.cloud import secretmanager
 
-DEBUG = False # pass it to True to run locally
+DEBUG = True # pass it to True to run locally
 
 if DEBUG:
 	letters = string.ascii_lowercase
@@ -223,7 +223,7 @@ def get_pdf():
 		)
 	return redirect("/")
 
-reasons = ["achats", "travail", "sante", "famille", "handicap", "transit", "missions", "judiciaire"]
+reasons = ["achats_culte_culturel", "travail", "sante", "famille", "convocation_demarches", "demenagement", "sport"]
 class UserForm(FlaskForm):
 	firstname = StringField('Prénom', validators=[DataRequired()])
 	lastname = StringField('Nom', validators=[DataRequired()])
