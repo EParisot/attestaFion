@@ -126,7 +126,11 @@ def get_pdf():
 
 		now, date, hour = get_date(profile["delay"])
 
-		if profile["reason"] == "achats" and (19 <= now.hour or now.hour < 6):
+		if profile["reason"] == "sport" and (19 <= now.hour or now.hour < 6):
+			profile["reason"] = "animaux"
+		elif profile["reason"] == "animaux" and (19 > now.hour or now.hour >= 6):
+			profile["reason"] = "sport"
+		if profile["reason"] == "achats_culte_culturel" and (19 <= now.hour or now.hour < 6):
 			flash("Des achats pendant le couvre-feu ? T'es magique toi !")
 			return redirect("/")
 
@@ -223,7 +227,7 @@ def get_pdf():
 		)
 	return redirect("/")
 
-reasons = ["achats_culte_culturel", "travail", "sante", "famille", "convocation_demarches", "demenagement", "animaux", "sport"]
+reasons = ["achats_culte_culturel", "travail", "sante", "famille", "animaux", "sport"]
 class UserForm(FlaskForm):
 	firstname = StringField('Prénom', validators=[DataRequired()])
 	lastname = StringField('Nom', validators=[DataRequired()])
