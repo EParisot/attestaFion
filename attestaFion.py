@@ -60,15 +60,14 @@ def make_qr_code(profile, now, date, hour):
 	first_name = profile["firstname"]
 	last_name = profile["lastname"]
 	birth_date = profile["birthday"]
-	birth_city = profile["placeofbirth"]
 	address = profile["address"] + profile["zipcode"] + profile["city"]
 	reason = profile["reason"]
 	data = "Cree le: %s a %s;\
 		\nNom: %s;\nPrenom: %s;\
-		\nNaissance: %s a %s;\
+		\nNaissance: %s;\
 		\nAdresse: %s;\
 		\nSortie: %s a %s;\
-		\nMotifs: %s;\n" % (date, hour, first_name, last_name, birth_date, birth_city, address, date, hour, reason)
+		\nMotifs: %s;\n" % (date, hour, first_name, last_name, birth_date, address, date, hour, reason)
 	qr = qrcode.QRCode(
 		version=1,
 		error_correction=qrcode.constants.ERROR_CORRECT_M,
@@ -84,7 +83,6 @@ def fill_form(driver, profile, now, date, hour):
 	driver.find_element_by_id("field-firstname").send_keys(profile["firstname"])
 	driver.find_element_by_id("field-lastname").send_keys(profile["lastname"])
 	driver.find_element_by_id("field-birthday").send_keys(profile["birthday"])
-	driver.find_element_by_id("field-placeofbirth").send_keys(profile["placeofbirth"])
 	driver.find_element_by_id("field-address").send_keys(profile["address"])
 	driver.find_element_by_id("field-city").send_keys(profile["city"])
 	driver.find_element_by_id("field-zipcode").send_keys(profile["zipcode"])
@@ -120,7 +118,6 @@ def get_pdf():
 		profile["firstname"] = form.firstname.data
 		profile["lastname"] = form.lastname.data
 		profile["birthday"] = form.birthday.data.strftime("%d/%m/%Y")
-		profile["placeofbirth"] = form.placeofbirth.data
 		profile["address"] = form.address.data
 		profile["city"] = form.city.data
 		profile["zipcode"] = form.zipcode.data
@@ -231,7 +228,6 @@ class UserForm(FlaskForm):
 	firstname = StringField('Prénom', validators=[DataRequired()])
 	lastname = StringField('Nom', validators=[DataRequired()])
 	birthday = DateField('Date de naissance', validators=[DataRequired()], format="%d/%m/%Y")
-	placeofbirth = StringField('Lieu de naissance', validators=[DataRequired()])
 	address = StringField('Adresse', validators=[DataRequired()])
 	city = StringField('Ville', validators=[DataRequired()])
 	zipcode = StringField('Code postal', validators=[DataRequired()])
