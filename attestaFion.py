@@ -223,7 +223,7 @@ def get_pdf():
 		)
 	return redirect("/")
 
-reasons = ["achats_culte_culturel", "travail", "sante", "famille", "convocation_demarches", "demenagement", "sport"]
+reasons = ["achats_culte_culturel", "travail", "sante", "famille", "convocation_demarches", "demenagement", "animaux", "sport"]
 class UserForm(FlaskForm):
 	firstname = StringField('Prénom', validators=[DataRequired()])
 	lastname = StringField('Nom', validators=[DataRequired()])
